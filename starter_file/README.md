@@ -82,10 +82,4 @@ Also, the endpoint can be invoked directly using the run method of the endpoint.
 ![Deployment bestrun](azureml3_automl_model_test.png)
 
 ## Screen Recording
-*TODO* Provide a link to a screen recording of the project in action. Remember that the screencast should demonstrate:
-- A working model
-- Demo of the deployed  model
-- Demo of a sample request sent to the endpoint and its response
-
-## Standout Suggestions
-*TODO (Optional):* This is where you can provide information about any standout suggestions that you have attempted.
+[Screencast](https://drive.google.com/file/d/139ZTAHwf8yCcA2cDQbrlLMLowJeyuCQM/view?usp=sharing)
