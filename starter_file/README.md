@@ -50,12 +50,13 @@ In this experiment, RandomSampling was used to sample max_iter and C paramters. 
 ![Hyperdrive pipeline](azureml3_hd_rundetails.png)
 
 The hyperdrive support early termination using a policy, which improves the performance. In this experiement, BanditPolicy was used to terminate runs where the primary metric is not within the specified slack factor/slack amount compared to best performing run.
-
 ![Hyperdrive results](azureml3_hd_runsettings.png)
+
 The following picture shows the results of hyperdrive experiment, shows the runs with hyperparameters and results. The best performing model uses a value of 1 for C and 1000 for max_iter
 ![Hyperdrive results](azureml3_hd_childmodels.png)
 ![Hyperdrive results](azureml3_hd_bestmodel_details.png)
 ![Hyperdrive results](azureml3_hd_childmodels_parameters.png)
+
 The best run model provides an accuracy of 0.8666 and AUC of 0.8792. the following picture shows the metrics of the best performing model
 ![Hyperdrive bestrun](azureml3_hd_bestmodelcode.png) 
 ![Hyperdrive bestrun](azureml3_hd_bestmodelresults.png) 
@@ -63,6 +64,7 @@ The best run model provides an accuracy of 0.8666 and AUC of 0.8792. the followi
 ## Model Deployment
 Automate ML model gives better result so we deployed the best run of AutoML. Using Python SDK, the model can be deplyed to Azure Container Service.
 ![Deployment bestrun](azureml3_models_results.png)
+
 ### Code
 An InferenceConfig is created with a scoring script. The scoring script can be downloaded from the model outputs of the best performing AutoML run. Deployment Configuration speficies information about cores and memory to be used by the deployment. The model can be deployed by passing inference configuration and deployment configuration to model's deploy method. Once the model is deployed, scoring URI can be obtained from the service.
 ![Deployment bestrun](azureml3_automl_endpoint_deployment.png)
