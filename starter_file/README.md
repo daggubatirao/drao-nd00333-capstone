@@ -18,7 +18,7 @@ Cardiovascular diseases (CVDs) are the number 1 cause of death globally, taking 
 
 People with cardiovascular disease or who are at high cardiovascular risk (due to the presence of one or more risk factors such as hypertension, diabetes, hyperlipidaemia or already established disease) need early detection and management wherein a machine learning model can be of great help.
 
-This Heart Failure PRediction dataset is downloaded from Kaggle. Death due to Heart Failure is predicted using information usch as anaemia, diabetes, high blood pressure, platelets, serum_creatinine, serum_sodium, creatinine_phosporous and ejection_fraction(%bllod leaving the heart at each contraction).
+This Heart Failure Prediction dataset is downloaded from Kaggle. Death due to Heart Failure is predicted using information usch as anaemia, diabetes, high blood pressure, platelets, serum_creatinine, serum_sodium, creatinine_phosporous and ejection_fraction(%bllod leaving the heart at each contraction).
 
 ### Task
 Predict the "DEATH_EVENT" column based on the input features, either the person survives (DEATH_EVENT=0) or cannot survive(DEATH_EVENT=1). The machine learning task is to run classification based on the input features. In HyperDrive experiment, we use Logistic Regression and identify best parameters. Using AutoML, we identify best algorithm. We have AUC metric to determine best model.
@@ -27,8 +27,15 @@ Predict the "DEATH_EVENT" column based on the input features, either the person 
 I have downloaded the CSV file from Kaggle and uploaded into my repository. Everytime notebook runs, it checks if the data available in the workspace and uploads the file to datastore if the data doesn't exist in the workspace.
 
 ## Automated ML
-Azure Maching Learning support automatic training and comparison of maching learning models using AutoML. To Run AutoML, an AutoMLConfig object needs to be created with paramteres such as dataset, training cluster, machine learning task, target column and metric to evaluate the algorithm. The following code snippet shows the parameters of the automl configutation.
+Azure Maching Learning support automatic training and comparison of maching learning models using AutoML. To Run AutoML, an AutoMLConfig object needs to be created with paramteres such as dataset, training cluster, machine learning task, target column and metric to evaluate the algorithm. In this project, we used the following AutoML settings.
+- experiment_timeout_hours: The time limit in hours for the experiement. In this experiment, I have used 2 hours
+- max_concurrent_iterations: maximum number of iterations that will be executed in parallel. In this experiment, i have used 10.
+- primary_metric: Metric to be used to optimize for model selection. the best-run model will be choosen based on this metric. Accuracy is common metric for classification problems. In this experiment, i have used AUC_Weighted as the primary metric.
+- enable_early_stopping: enable early termination if the score is not improving in the short term
+- featurization: Indicator for whether featurization step should be done automatically or not, or whether customized featurization should be used. In this project, I have used 'auto'
+The following code snippet shows the parameters of the automl configutation.
 ![AutoML Code](azureml3_automl_settings.png) 
+
 The AutoMLconfig object is then submitted to an experiment, which runs AutoML on the specified data. The following picture shows the run settings of the AutoML run.
 ![AutoML RunSettings](azureml3_automl_runsettings.png)
 
@@ -45,8 +52,9 @@ The AutoML fitted model can be obtained using the get_output() method of the Aut
 AzureML supports hyperparameter tunig using hyperdrive package. Using hyperdrive, the parameter search space space can be defined using randon, grid or bayesian sampling. In the experiement, LogisticRegression classification was used. The training script loads the data, cleans that data, and runs LogisticRegression using the parameters supplied to the script and logs the metrics. The hyperdrive samples the paramters and calls the training script using a set of parameters at a time. Hyperdrive compares the metrics, and ranks the experiment runs based the specific metric. In this experiment, Accuracy was used to rank the runs.
 
 In this experiment, RandomSampling was used to sample max_iter and C paramters. max_iter is the maximum number of iterations for the learning algorith to converge. In thix experiment, I have used discrete list values [500, 1000, 5000] for max_iter. C is the inverse of regularization strength. In this experiment, i have used discrete list values [100, 10, 5, 2, 1, 0.1, 0.01, 0.001] for C. The Random Sampling selects combination max_iter and C. Random Sampling supports early termination of low-performance runs. The high level steps in hyperdrive pipeline are shown in the following diagram
-
 ![Hyperdrive pipeline](azureml3_hd_config.png)
+
+The following screenshot shows the RunDetails of the Hyperdrive experiement.
 ![Hyperdrive pipeline](azureml3_hd_rundetails.png)
 
 The hyperdrive support early termination using a policy, which improves the performance. In this experiement, BanditPolicy was used to terminate runs where the primary metric is not within the specified slack factor/slack amount compared to best performing run.
@@ -54,11 +62,17 @@ The hyperdrive support early termination using a policy, which improves the perf
 
 The following picture shows the results of hyperdrive experiment, shows the runs with hyperparameters and results. The best performing model uses a value of 1 for C and 1000 for max_iter
 ![Hyperdrive results](azureml3_hd_childmodels.png)
+
+The following picture shows details of best run from the hyperdrive experiment. It shows the parameters it used(Max iterations:1000, REgularization strength:1) and metrics(AUC:0.879 and Accuracy:0.867)
 ![Hyperdrive results](azureml3_hd_bestmodel_details.png)
+
+The following screenshot shows the parameters generated from the sampling and child runs in the hyperdrive experiement.
 ![Hyperdrive results](azureml3_hd_childmodels_parameters.png)
 
 The best run model provides an accuracy of 0.8666 and AUC of 0.8792. the following picture shows the metrics of the best performing model
 ![Hyperdrive bestrun](azureml3_hd_bestmodelcode.png) 
+
+Using Python SDK, we can register the best model with AzureML workspace and tag the model with metrics. When we are running the experiment multiple times, this information can be used to compare results from different runs.
 ![Hyperdrive bestrun](azureml3_hd_bestmodelresults.png) 
 
 ## Model Deployment
