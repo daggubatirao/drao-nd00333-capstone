@@ -10,6 +10,7 @@ The following diagram shows the steps involved in training models using hyperdri
 
 ## Project Set Up and Installation
 The notebooks contain all the code required to load the dataset, configure the compute instance, the AutoML model and deply the best model.
+The environment details are saved to repository.
 
 ## Dataset
 
@@ -38,6 +39,9 @@ The following code snippet shows the parameters of the automl configutation.
 
 The AutoMLconfig object is then submitted to an experiment, which runs AutoML on the specified data. The following picture shows the run settings of the AutoML run.
 ![AutoML RunSettings](azureml3_automl_runsettings.png)
+
+The following screenshot shows RunDetails of AutoML.
+![AutoML RunSettings](azureml3_automl_rundetails.png)
 
 AutoML preprocessed the data, trains different models and ranks the models based on user selected metric. The following picture shows top algorithms that autoML ran and ranked the runs based on the metric. In this experiment, AutoML identified VotingEnsemble. The following picture shows the run settings of voting ensemble algorithm.
 ![AutoML RunSettings](azureml3_automl_childmodels.png)
